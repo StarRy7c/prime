@@ -1,96 +1,71 @@
-            <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prime English Frame</title>
+  <title>Prime English</title>
   <style>
     body {
       margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
       overflow: hidden;
-      background-color: #f5f5f5;
     }
 
-    /* iframe setup */
     iframe {
       width: 100%;
-      height: calc(100vh - 50px);
+      height: calc(100vh - 40px);
       border: none;
-      overflow: hidden;
-      pointer-events: none; /* prevents link clicking inside */
+      pointer-events: none; /* disables click */
     }
 
-    /* bottom strip */
     .strip {
-      height: 50px;
-      background: linear-gradient(90deg, #007aff, #00d4ff);
+      height: 40px;
+      background: #0088cc;
       color: white;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 16px;
-      font-weight: bold;
-      letter-spacing: 0.5px;
     }
 
-    /* popup overlay */
+    /* popup */
     .popup {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0,0,0,0.6);
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 999;
     }
 
     .popup-box {
       background: #fff;
-      border-radius: 15px;
+      padding: 20px;
       text-align: center;
-      padding: 25px 20px;
-      width: 320px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      animation: popIn 0.3s ease;
-    }
-
-    @keyframes popIn {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .popup-box h2 {
-      margin-bottom: 15px;
-      color: #333;
-    }
-
-    .popup-box p {
-      font-size: 14px;
-      margin-bottom: 20px;
-      color: #555;
+      border-radius: 10px;
+      width: 300px;
     }
 
     .popup-box a {
       display: inline-block;
       background: #0088cc;
-      color: #fff;
+      color: white;
       padding: 10px 20px;
-      border-radius: 8px;
+      border-radius: 6px;
       text-decoration: none;
-      font-weight: 600;
+      font-weight: bold;
+      margin-top: 10px;
     }
 
     .popup-box button {
-      display: block;
-      margin: 15px auto 0;
-      background: none;
+      margin-top: 10px;
       border: none;
-      color: #999;
+      background: none;
+      color: #777;
       font-size: 14px;
       cursor: pointer;
     }
@@ -99,29 +74,24 @@
 <body>
 
   <!-- iframe -->
-  <iframe 
-    src="https://prime-english.vercel.app/" 
-    sandbox="allow-same-origin allow-scripts"
-    scrolling="no">
-  </iframe>
+  <iframe src="https://prime-english.vercel.app/" scrolling="no" sandbox="allow-same-origin allow-scripts"></iframe>
 
   <!-- bottom strip -->
   <div class="strip">
-    🔥 Prime English Portal — Learn Smart, Speak Confidently!
+    🔗 Join our Telegram for updates — <a href="https://t.me/+OACGYQBHrIJmM2Y1" target="_blank" style="color: #fff; margin-left: 6px; text-decoration: underline;">Join Now</a>
   </div>
 
-  <!-- Telegram popup -->
+  <!-- popup -->
   <div class="popup" id="popup">
     <div class="popup-box">
-      <h2>Join Our Telegram</h2>
-      <p>Get daily updates, notes & premium English tips directly on Telegram.</p>
-      <a href="https://t.me/+OACGYQBHrIJmM2Y1" target="_blank">Join Now</a>
+      <h3>Join our Telegram</h3>
+      <p>Get free updates & English tips daily!</p>
+      <a href="https://t.me/+OACGYQBHrIJmM2Y1" target="_blank">Join Now</a><br>
       <button onclick="closePopup()">Cancel</button>
     </div>
   </div>
 
   <script>
-    // Close popup function
     function closePopup() {
       document.getElementById('popup').style.display = 'none';
     }
