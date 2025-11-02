@@ -1,226 +1,342 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>crixzy ™</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>CRXC × CIL — Live Player</title>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.3.4/dist/controls.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-:root {
-    --bg-color: #121212;
-    --primary-blue: #00b4d8;
-    --primary-blue-dark: #0077b6;
-    --card-bg: #1e1e1e;
-    --text-light: #f1f5f9;
-    --text-muted: #94a3b8;
-    --border-color: #2d2d2d;
-    --popup-bg: #282828;
-    --popup-shadow-color: rgba(0, 180, 216, 0.4);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-light);
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    padding: 1rem;
-}
-.container {
-    width: 100%;
-    max-width: 800px;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeIn 0.5s ease-out forwards;
-}
-@keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
-.stream-header {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    padding: 0.75rem 1.25rem;
-    border-radius: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-.stream-header h1 { font-size: 1.25rem; font-weight: 600; }
-.live-badge {
-    background-color: var(--primary-blue);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    animation: pulse 1.5s infinite;
-}
-@keyframes pulse {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 180, 216, 0.7); }
-    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 180, 216, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 180, 216, 0); }
-}
-#player-container {
-    width: 100%;
-    height: 50vh;
-    max-height: 600px;
-    background-color: #000;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    border-radius: 12px;
-    overflow: hidden;
-}
-.info-card {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 1.25rem;
-    margin-top: 1rem;
-    text-align: center;
-}
-.info-card h2 {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    color: var(--text-muted);
-}
-.action-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    width: 100%;
-    padding: 0.8rem 1rem;
-    border-radius: 8px;
-    background: linear-gradient(90deg, var(--primary-blue), var(--primary-blue-dark));
-    color: white;
-    font-weight: 600;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.action-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px var(--popup-shadow-color);
-}
-.action-button.copied { background: linear-gradient(90deg, #22c55e, #4ade80); }
-.back-link {
-    display: inline-block;
-    width: 100%;
-    text-align: center;
-    margin-top: 1.5rem;
-    color: var(--text-muted);
-    text-decoration: none;
-    padding: 0.5rem;
-    border-radius: 8px;
-    transition: background-color 0.2s ease;
-}
-.back-link:hover { background-color: var(--card-bg); color: var(--text-light); }
-.telegram-popup {
-    position: fixed;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    background: linear-gradient(145deg, #181818, #1f1f1f);
-    color: var(--text-light);
-    padding: 40px 25px;
-    border-radius: 16px;
-    box-shadow: 0 0 50px 10px rgba(0, 180, 216, 0.5), 0 0 20px rgba(0, 180, 216, 0.3) inset;
-    z-index: 10000;
-    text-align: center;
-    width: 90%;
-    max-width: 400px;
-    display: none;
-    border: 2px solid var(--primary-blue);
-    animation: popIn 0.4s ease-out forwards, glowPulse 2.5s infinite alternate;
-}
-@keyframes glowPulse {
-    0% { box-shadow: 0 0 20px rgba(0, 180, 216, 0.3), 0 0 10px rgba(0, 180, 216, 0.2) inset; }
-    100% { box-shadow: 0 0 40px rgba(0, 180, 216, 0.7), 0 0 20px rgba(0, 180, 216, 0.4) inset; }
-}
+  :root{
+    --bg:#0b1020;
+    --card:#0f1724;
+    --muted:#94a3b8;
+    --accent1:#00b4d8;
+    --accent2:#7c3aed;
+    --glass: rgba(255,255,255,0.04);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: 'Poppins',system-ui,Segoe UI,Roboto,Arial;
+    background: radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.09), transparent 8%),
+                radial-gradient(1000px 500px at 90% 90%, rgba(0,180,216,0.06), transparent 10%),
+                var(--bg);
+    color:#e6eef8;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* layout */
+  .wrap{max-width:1150px;margin:36px auto;padding:24px;}
+  header.site-header{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    margin-bottom:18px;
+  }
+  .brand{
+    display:flex;align-items:center;gap:14px;
+  }
+  .logo{
+    width:56px;height:56px;border-radius:12px;
+    background:linear-gradient(135deg,var(--accent1),var(--accent2));
+    display:grid;place-items:center;
+    box-shadow:0 8px 30px rgba(124,58,237,0.12), inset 0 -6px 16px rgba(0,0,0,0.25);
+    transform:translateZ(0);
+  }
+  .logo strong{font-size:20px;color:white;letter-spacing:0.5px}
+  .title{
+    font-weight:700;font-size:18px;
+    line-height:1;
+  }
+  .subtitle{font-size:12px;color:var(--muted);margin-top:2px}
+
+  /* hero / player card */
+  .player-card{
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.03);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow: 0 10px 40px rgba(2,6,23,0.6);
+  }
+  .player-top{
+    padding:18px 20px;display:flex;align-items:center;justify-content:space-between;
+    gap:12px;background:linear-gradient(90deg, rgba(124,58,237,0.04), rgba(0,180,216,0.03));
+    border-bottom:1px solid rgba(255,255,255,0.02);
+  }
+  .stream-meta{display:flex;flex-direction:column}
+  .stream-meta .name{font-weight:700;font-size:16px}
+  .stream-meta .status{font-size:12px;color:var(--muted);margin-top:6px;display:flex;gap:8px;align-items:center}
+  .dot{width:10px;height:10px;background:linear-gradient(180deg,#ff6b6b,#ff3b3b);border-radius:999px;box-shadow:0 0 12px rgba(255,60,60,0.22)}
+  .controls{display:flex;gap:10px;align-items:center}
+
+  .btn{
+    padding:9px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:700;
+    background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white;
+    display:inline-flex;gap:8px;align-items:center;
+    box-shadow:0 8px 20px rgba(12,15,40,0.6);
+  }
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);font-weight:600}
+
+  /* big player area */
+  .player-area{position:relative;height:60vh;min-height:360px;background:#000;}
+  .player-iframe{
+    width:100%;height:100%;border:0;display:block;
+    transform:scale(1);transition:transform .6s cubic-bezier(.2,.9,.2,1);
+  }
+
+  /* play overlay */
+  .play-overlay{
+    position:absolute;inset:0;display:grid;place-items:center;
+    background:linear-gradient(180deg, rgba(2,6,23,0.38), rgba(2,6,23,0.54));
+    color:white;backdrop-filter: blur(6px);
+    transition:opacity .28s ease, visibility .28s;
+  }
+  .play-card{
+    text-align:center;padding:20px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+    border:1px solid rgba(255,255,255,0.03);
+    transform:translateY(0);transition:transform .4s;
+  }
+  .play-btn{
+    width:96px;height:96px;border-radius:999px;border:none;font-size:28px;
+    display:grid;place-items:center;margin:8px auto 12px;
+    background:linear-gradient(135deg,var(--accent2),var(--accent1));
+    box-shadow:0 18px 40px rgba(0,0,0,0.6), 0 6px 18px rgba(124,58,237,0.12);
+    cursor:pointer;color:white;
+  }
+  .play-hint{color:var(--muted);font-size:13px}
+
+  /* small controls bar */
+  .controls-bar{display:flex;gap:12px;padding:14px;background:var(--glass);border-top:1px solid rgba(255,255,255,0.02);align-items:center}
+  .controls-bar .left{display:flex;gap:10px;align-items:center}
+  .controls-bar .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+
+  /* floating telegram */
+  .telegram-fab{
+    position:fixed;right:18px;bottom:18px;width:56px;height:56px;border-radius:14px;
+    background:linear-gradient(135deg,var(--accent1),var(--accent2));
+    display:grid;place-items:center;color:white;box-shadow:0 18px 40px rgba(12,15,40,0.6);
+    z-index:9999;text-decoration:none;
+    transform:translateY(0);
+  }
+  .tele-label{
+    position:fixed;right:86px;bottom:26px;background:rgba(0,0,0,0.5);padding:8px 12px;border-radius:10px;color:white;font-weight:700;
+    border:1px solid rgba(255,255,255,0.03);backdrop-filter: blur(6px);
+  }
+
+  /* animations */
+  .fade-in-up{opacity:0;transform:translateY(10px);animation:fadeUp .6s forwards}
+  @keyframes fadeUp{to{opacity:1;transform:none}}
+
+  /* responsive */
+  @media (max-width:820px){
+    .wrap{padding:16px}
+    .player-area{height:55vh}
+    .logo{width:48px;height:48px}
+  }
 </style>
 </head>
+
 <body>
-<main class="container">
-    <div class="stream-header">
-        <h1>Live Match</h1>
-        <div class="live-badge"><i class="fa-solid fa-circle"></i> LIVE</div>
-    </div>
+  <div class="wrap">
+    <header class="site-header fade-in-up" style="animation-delay:.05s">
+      <div class="brand">
+        <div class="logo"><strong>CR</strong></div>
+        <div>
+          <div class="title">CRXC × CIL — Live Player</div>
+          <div class="subtitle">Animated UI • Click play to start the stream</div>
+        </div>
+      </div>
 
-    <div id="player-container">
-        <video id="video" controls autoplay style="width:100%; height:100%; border-radius:12px;"></video>
-    </div>
+      <div class="controls">
+        <button id="copyBtn" class="btn ghost" title="Copy page link">Copy Link</button>
+        <button id="openBtn" class="btn" title="Open in new tab">Open</button>
+      </div>
+    </header>
 
-    <div class="info-card">
-        <h2><i class="fa-solid fa-bell"></i> Follow us for Updates!</h2>
-        <a href="https://t.me/+OACGYQBHrIJmM2Y1" target="_blank" rel="noopener" class="action-button">
-            <i class="fa-brands fa-telegram"></i> Click Here To Join Telegram
-        </a>
-    </div>
+    <main class="player-card fade-in-up" style="animation-delay:.12s">
+      <div class="player-top">
+        <div class="stream-meta">
+          <div class="name">Live Cricket — Fox Cricket Frame</div>
+          <div class="status"><span class="dot"></span><span>LIVE</span><span style="opacity:.65">•</span><span class="subtitle">High quality iframe playback</span></div>
+        </div>
 
-    <div class="info-card">
-        <h2><i class="fa-solid fa-link"></i> Copy Link & Share</h2>
-        <button class="action-button" id="shareButton"><i class="fa-solid fa-share-nodes"></i> Click Here To Share This Page Link</button>
-    </div>
+        <div class="controls">
+          <button id="theaterBtn" class="btn ghost" title="Enter theater mode">Theater</button>
+          <button id="shareBtn" class="btn ghost" title="Share this page">Share</button>
+        </div>
+      </div>
 
-    <a href="#" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to All Streams</a>
-</main>
+      <div class="player-area" id="playerArea">
+        <!-- Lazy iframe placeholder (not loaded until user hits play) -->
+        <div class="play-overlay" id="overlay">
+          <div class="play-card" role="button" aria-label="Play stream">
+            <button id="playBtn" class="play-btn" title="Play">
+              ▶
+            </button>
+            <div style="font-weight:700">Click to Play</div>
+            <div class="play-hint">Stream will open inside a secure frame</div>
+          </div>
+        </div>
 
-<div class="telegram-popup" id="telegramPopup">
-    <h2><i class="fa-brands fa-telegram"></i> Support Us!</h2>
-    <p>Join our Telegram channel <strong>DILZ LINKS</strong> for instant updates, highlights, and exclusive links.</p>
-    <a href="https://t.me/+OACGYQBHrIJmM2Y1" target="_blank" rel="noopener"><button class="join-btn">Join Now</button></a>
-    <button class="joined-btn" onclick="document.getElementById('telegramPopup').style.display='none';">Already Joined</button>
-</div>
+        <!-- iframe container -->
+        <iframe id="playerFrame" class="player-iframe"
+          src=""
+          allow="autoplay; encrypted-media; fullscreen"
+          allowfullscreen
+          loading="lazy"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+          style="background:#000">
+        </iframe>
+      </div>
 
-<script src="https://cdn.jsdelivr.net/npm/shaka-player@4.3.4/dist/shaka-player.compiled.js"></script>
+      <div class="controls-bar">
+        <div class="left">
+          <div style="font-size:13px;color:var(--muted)"><strong>Now playing:</strong> Fox Cricket Frame (iframe)</div>
+        </div>
+        <div class="right">
+          <button id="muteBtn" class="btn ghost">Mute</button>
+          <button id="popBtn" class="btn">Open in new tab</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Telegram floating CTA -->
+  <a class="telegram-fab" id="tgFab" href="https://t.me/+OACGYQBHrIJmM2Y1" target="_blank" rel="noopener" title="Join Telegram">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="filter:drop-shadow(0 6px 10px rgba(12,15,40,0.6))">
+      <path d="M21 3L3 10.5l4.5 1.6L18.4 6.2 14.7 16.8 21 3z" fill="white"/>
+    </svg>
+  </a>
+  <div class="tele-label">Join Telegram</div>
+
 <script>
-document.addEventListener('DOMContentLoaded', async () => {
-    const video = document.getElementById('video');
-    const manifestUri = 'https://media.onestream.studio/content/hls/live/live_4139402_30h7l45o0/hls.m3u8';
-    
-    if (shaka.Player.isBrowserSupported()) {
-        const player = new shaka.Player(video);
-        try {
-            await player.load(manifestUri);
-            console.log('The video has now been loaded!');
-        } catch (e) {
-            console.error('Error loading stream', e);
-        }
-    } else {
-        alert('Browser not supported for playback.');
+  (function(){
+    const iframe = document.getElementById('playerFrame');
+    const overlay = document.getElementById('overlay');
+    const playBtn = document.getElementById('playBtn');
+    const popBtn = document.getElementById('popBtn');
+    const openBtn = document.getElementById('openBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const shareBtn = document.getElementById('shareBtn');
+    const theaterBtn = document.getElementById('theaterBtn');
+    const muteBtn = document.getElementById('muteBtn');
+
+    // iframe source (your provided url)
+    const IFRAME_SRC = 'https://cricketstan.github.io/Fox-Cricket-/';
+
+    // helper to lazy-load iframe
+    function loadIframe() {
+      if (!iframe.src) {
+        iframe.src = IFRAME_SRC;
+        // subtle scale animation
+        iframe.style.transform = 'scale(.995)';
+        setTimeout(()=> iframe.style.transform = 'scale(1)', 80);
+      }
+      overlay.style.opacity = 0;
+      overlay.style.visibility = 'hidden';
     }
 
-    setTimeout(() => {
-        document.getElementById('telegramPopup').style.display = 'block';
-    }, 2000);
-
-    document.getElementById('shareButton').addEventListener('click', async () => {
-        try {
-            await navigator.clipboard.writeText(window.location.href);
-            const btn = document.getElementById('shareButton');
-            const original = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-check"></i> Link Copied!`;
-            btn.classList.add('copied');
-            setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copied'); }, 2000);
-        } catch (err) {
-            console.error(err);
-        }
+    // play action
+    playBtn.addEventListener('click', () => {
+      loadIframe();
+      // focus for keyboard users
+      iframe.focus();
     });
-});
+
+    // also allow clicking anywhere on overlay to play
+    overlay.addEventListener('click', (e)=> {
+      if (e.target === overlay || e.target === document.querySelector('.play-card')) loadIframe();
+    });
+
+    // open in new tab (direct link)
+    popBtn.addEventListener('click', ()=> {
+      window.open(IFRAME_SRC, '_blank', 'noopener');
+    });
+    openBtn.addEventListener('click', ()=> window.open(IFRAME_SRC, '_blank', 'noopener'));
+
+    // copy link
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        copyBtn.textContent = 'Copied ✓';
+        setTimeout(()=> copyBtn.textContent = 'Copy Link', 1800);
+      } catch (e) {
+        copyBtn.textContent = 'Copy Failed';
+        setTimeout(()=> copyBtn.textContent = 'Copy Link', 1800);
+      }
+    });
+
+    // share (native where available)
+    shareBtn.addEventListener('click', async () => {
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: document.title, url: window.location.href });
+        } catch (e) { /* ignore user cancel */ }
+      } else {
+        // fallback: copy link
+        try { await navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard'); }
+        catch(e){ alert('Share not supported.'); }
+      }
+    });
+
+    // theater mode - toggle a minimal fullscreen-like style
+    let theater = false;
+    theaterBtn.addEventListener('click', () => {
+      theater = !theater;
+      const el = document.querySelector('.player-card');
+      if (theater) {
+        el.style.position = 'fixed';
+        el.style.top = '10px';
+        el.style.left = '10px';
+        el.style.right = '10px';
+        el.style.bottom = '10px';
+        el.style.zIndex = 9998;
+        el.style.borderRadius = '10px';
+        el.style.padding = '0';
+        theaterBtn.textContent = 'Exit Theater';
+      } else {
+        el.style.position = '';
+        el.style.top = '';
+        el.style.left = '';
+        el.style.right = '';
+        el.style.bottom = '';
+        el.style.zIndex = '';
+        el.style.borderRadius = '';
+        el.style.padding = '';
+        theaterBtn.textContent = 'Theater';
+      }
+    });
+
+    // mute toggle (only works if iframe content exposes audio controls — for cross-origin iframes this won't control inner audio)
+    let muted = false;
+    muteBtn.addEventListener('click', () => {
+      muted = !muted;
+      try {
+        // if iframe is same-origin we can access audio; otherwise, fallback to message to user
+        iframe.contentWindow.document.querySelectorAll('video, audio').forEach(media => media.muted = muted);
+        muteBtn.textContent = muted ? 'Unmute' : 'Mute';
+      } catch (e) {
+        // cannot control cross-origin iframe audio
+        alert('Mute control not available for cross-origin iframe. Use your system/audio controls instead.');
+      }
+    });
+
+    // accessibility: allow Enter to trigger play
+    playBtn.addEventListener('keyup', (e)=> { if (e.key === 'Enter' || e.key === ' ') loadIframe(); });
+
+    // small nicety: show overlay until user loads iframe; if user already has iframe blocked, show a short hint
+    setTimeout(()=> {
+      if (!iframe.src) {
+        // gentle pulse to draw attention
+        overlay.style.animation = 'pulseOverlay 2.2s infinite';
+        const style = document.createElement('style');
+        style.innerHTML = `@keyframes pulseOverlay {0%{opacity:1}50%{opacity:.9}100%{opacity:1}}`;
+        document.head.appendChild(style);
+      }
+    }, 1300);
+
+  })();
 </script>
 </body>
 </html>
